@@ -230,7 +230,7 @@ export default function InsightTool() {
   const [filterType, setFilterType] = useState("All Types");
   const [filterSeverity, setFilterSeverity] = useState("All Severities");
   const [search, setSearch] = useState("");
-  const [expanded, setExpanded] = useState(null);
+  const [expanded, setExpanded] = useState(new Set());
   const [view, setView] = useState("grid");
 
   const updateStatus = (id, status) => {
@@ -334,9 +334,9 @@ export default function InsightTool() {
 
       {/* Content */}
       <div style={{ padding: "20px 28px" }}>
-        <div style={{ display: view === "grid" ? "grid" : "flex", gridTemplateColumns: "repeat(auto-fill, minmax(380px, 1fr))", flexDirection: "column", gap: 16 }}>
+        <div style={{ display: view === "grid" ? "grid" : "flex", gridTemplateColumns: "repeat(auto-fill, minmax(380px, 1fr))", flexDirection: "column", gap: 16, alignItems: "start" }}>
           {filtered.map(insight => {
-            const isExpanded = expanded === insight.id;
+            const isExpanded = expanded.has(insight.id);
             const sevColors = SEVERITY_COLORS[insight.severity];
             const typeColors = TYPE_COLORS[insight.type];
 
@@ -395,7 +395,7 @@ export default function InsightTool() {
                 {/* Card footer */}
                 <div style={{ padding: "8px 16px", background: "#F9FAFB", borderTop: "1px solid #F3F4F6", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <span style={{ fontSize: 11, color: "#9CA3AF" }}>Source: {insight.source}</span>
-                  <button onClick={() => setExpanded(isExpanded ? null : insight.id)} style={{
+                  <button onClick={() => setExpanded(prev => { const next = new Set(prev); isExpanded ? next.delete(insight.id) : next.add(insight.id); return next; })} style={{
                     padding: "4px 12px", borderRadius: 6, border: "1px solid #D1D5DB", fontSize: 12,
                     fontWeight: 600, cursor: "pointer", background: "white", color: "#374151"
                   }}>
